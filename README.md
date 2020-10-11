@@ -9,6 +9,7 @@ Fast Fourier Transform
 FFT 定義
 
 template <class InputIterator, class OutputIterator>
+
 void FFT(int n_sample, InputIterator  data_first, OutputIterator real_first, OutputIterator imag_first);
 
 フーリエ変換は入力関数を複素数関数に変換するので、出力には実部と虚部それぞれ関する配列を用意する必要があります。
@@ -20,6 +21,7 @@ void FFT(int n_sample, InputIterator  data_first, OutputIterator real_first, Out
 InverseFFT 定義
 
 template <class InputIterator, class OutputIterator>
+
 void InverseFFT(int n_sample, InputIterator in_first_Re, InputIterator in_first_Im, OutputIterator out_first_Re, OutputIterator out_first_Im);
 
 逆フーリエ変換用の関数です。
