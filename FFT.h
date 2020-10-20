@@ -5,6 +5,7 @@
 #include <cassert>
 #include <complex>
 #include <cmath>
+#include <vector>
 
 int binary_inversion(int N, int digit){
   int a = 0;
@@ -30,11 +31,11 @@ T power(T const &x, long long N){
   return result;
 }
 
-template <class InputIterator, class OutputIterator>
+<template <class InputIterator, class OutputIterator>
   void FFT(int n_sample, InputIterator  data_first,
 	   OutputIterator real_first, OutputIterator imag_first){
   // ------ size investigation ------ //
-  assert( n_sample & (n_sample - 1) != 0);
+  assert( (n_sample & (n_sample - 1) ) == 0);
   auto log2 = [](int N)
     {
      int count = 0;
@@ -46,7 +47,6 @@ template <class InputIterator, class OutputIterator>
     };
   
   int n = log2(n_sample);
-  //std::for_each(Cdata.begin(), Cdata.end(), [](std::complex<double> &x){std::cout << x.real() << " " << x.imag() << std::endl;} );
   
   // ------ Rotation factor ---- //
   const double pi = 3.14159265358979; // pi
@@ -62,7 +62,7 @@ template <class InputIterator, class OutputIterator>
   /////// Input data to aft_btfly[0][i] ///////
   for(int i = 0 ; i < n_sample ; i++){
     int bit_inv_i = binary_inversion(i, n);
-    aft_btfly[0][i] = { *(data_first + bit_inv_i), 0 };
+    aft_btfly[0][i] = { static_cast<double>(*(data_first + bit_inv_i)), 0 };
   }
   
   // ------ FFT ------ //
@@ -92,19 +92,19 @@ template <class InputIterator, class OutputIterator>
 }
 
 template <class InputIterator, class OutputIterator>
-  void InverseFFT(int n_sample, InputIterator in_first_Re, InputIterator in_first_Im,
-		  OutputIterator out_first_Re, OutputIterator out_first_Im){
+void InverseFFT(int n_sample, InputIterator in_first_Re, InputIterator in_first_Im,
+		OutputIterator out_first_Re, OutputIterator out_first_Im){
   // ------ size investigation ------ //
-  assert( n_sample & (n_sample - 1) != 0);
+  assert( ( n_sample & (n_sample - 1) ) == 0);
   auto log2 = [](int N)
-    {
-     int count = 0;
-     while(N != 1){
-       N /= 2;
-       ++count;
-     }
-     return count;
-    };
+	      {
+		int count = 0;
+		while(N != 1){
+		  N /= 2;
+		  ++count;
+		}
+		return count;
+	      };
   
   int n = log2(n_sample);
   
@@ -122,7 +122,7 @@ template <class InputIterator, class OutputIterator>
   /////// Input data to aft_btfly[0][i] ///////
   for(int i = 0 ; i < n_sample ; i++){
     int bit_inv_i = binary_inversion(i, n);
-    aft_btfly[0][i] = { *(in_first_Re + bit_inv_i), *(in_first_Im + bit_inv_i) * (-1)};
+    aft_btfly[0][i] = { static_cast<double>(*(in_first_Re + bit_inv_i) ), static_cast<double>( *(in_first_Im + bit_inv_i) ) * (-1)};
   }
   
   // ------ FFT ------ //
