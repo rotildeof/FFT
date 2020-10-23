@@ -31,9 +31,9 @@ T power(T const &x, long long N){
   return result;
 }
 
-<template <class InputIterator, class OutputIterator>
-  void FFT(int n_sample, InputIterator  data_first,
-	   OutputIterator real_first, OutputIterator imag_first){
+template <class InputIterator, class OutputIterator>
+void FFT(int n_sample, InputIterator data_first,
+         OutputIterator real_first, OutputIterator imag_first){
   // ------ size investigation ------ //
   assert( (n_sample & (n_sample - 1) ) == 0);
   auto log2 = [](int N)
