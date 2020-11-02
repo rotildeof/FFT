@@ -6,6 +6,7 @@
 #include <complex>
 #include <cmath>
 #include <vector>
+#include <array>
 
 int binary_inversion(int N, int digit){
   int a = 0;
@@ -56,7 +57,10 @@ void FFT(int n_sample, InputIterator data_first,
   }
   
   // ---- Reserve array for output of butterfly operation ---- //
-  std::vector<std::vector< std::complex<double> > > aft_btfly(n + 1, std::vector<std::complex<double> >(n_sample) ); // include input data itself at[0];
+  std::array<std::vector<std::complex<double>>, 2> aft_btfly = {
+      std::vector<std::complex<double>>(n_sample),
+      std::vector<std::complex<double>>(n_sample),
+  }; // include input data itself at[0];
   
   // ---- Data as complex numbers -------//
   /////// Input data to aft_btfly[0][i] ///////
@@ -74,14 +78,15 @@ void FFT(int n_sample, InputIterator data_first,
       for(int k = 0 ; k < num_group ; ++k){
 	int top_index      = 2 * num_btfly * k + j;
 	int bottom_index   = 2 * num_btfly * k + j + num_btfly;
-	aft_btfly[i][top_index]    = aft_btfly[i - 1][top_index] + W[rot_factor * j] * aft_btfly[i - 1][bottom_index];
-	aft_btfly[i][bottom_index] = aft_btfly[i - 1][top_index] - W[rot_factor * j] * aft_btfly[i - 1][bottom_index];
+	aft_btfly[1][top_index] = aft_btfly[0][top_index] + W[rot_factor * j] * aft_btfly[0][bottom_index];
+	aft_btfly[1][bottom_index] = aft_btfly[0][top_index] - W[rot_factor * j] * aft_btfly[0][bottom_index];
       }// k
     }// j
+    aft_btfly[0].swap(aft_btfly[1]);
   }// i : 1 -> n
   
   // ------ COPY ------ //
-  for(auto &&r : aft_btfly[n]){
+  for (auto &&r : aft_btfly[0]){
     *real_first = r.real();
     *imag_first = r.imag();
     real_first++;
@@ -116,7 +121,10 @@ void InverseFFT(int n_sample, InputIterator in_first_Re, InputIterator in_first_
   }
   
   // ---- Reserve array for output of butterfly operation ---- //
-  std::vector<std::vector< std::complex<double> > > aft_btfly(n + 1, std::vector<std::complex<double> >(n_sample) ); // include input data itself at[0];
+  std::array<std::vector<std::complex<double>>, 2> aft_btfly = {
+      std::vector<std::complex<double>>(n_sample),
+      std::vector<std::complex<double>>(n_sample),
+  }; // include input data itself at[0];
   
   // ---- Data as complex numbers -------//
   /////// Input data to aft_btfly[0][i] ///////
@@ -134,14 +142,15 @@ void InverseFFT(int n_sample, InputIterator in_first_Re, InputIterator in_first_
       for(int k = 0 ; k < num_group ; ++k){
 	int top_index      = 2 * num_btfly * k + j;
 	int bottom_index   = 2 * num_btfly * k + j + num_btfly;
-	aft_btfly[i][top_index]    = aft_btfly[i - 1][top_index] + W[rot_factor * j] * aft_btfly[i - 1][bottom_index];
-	aft_btfly[i][bottom_index] = aft_btfly[i - 1][top_index] - W[rot_factor * j] * aft_btfly[i - 1][bottom_index];
+	aft_btfly[1][top_index] = aft_btfly[0][top_index] + W[rot_factor * j] * aft_btfly[0][bottom_index];
+	aft_btfly[1][bottom_index] = aft_btfly[0][top_index] - W[rot_factor * j] * aft_btfly[0][bottom_index];
       }// k
     }// j
+    aft_btfly[0].swap(aft_btfly[1]);
   }// i : 1 -> n
   
   // ------ COPY ------ //
-  for(auto &&r : aft_btfly[n]){
+  for (auto &&r : aft_btfly[0]){
     *out_first_Re = r.real() / n_sample;
     *out_first_Im = r.imag() / n_sample;
     ++out_first_Re;
