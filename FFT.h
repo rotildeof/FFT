@@ -6,6 +6,7 @@
 #include <complex>
 #include <cmath>
 #include <vector>
+#include <array>
 
 int binary_inversion(int N, int digit){
   int a = 0;
@@ -56,10 +57,10 @@ template <class InputIterator, class OutputIterator>
   }
   
   // ---- Reserve array for output of butterfly operation ---- //
-  // --> The results of butterfly operations are input to
-  // --> "aft_btfly[0][]" and "aft_btfly[1][]" alternately for saving memory.
-  
-  std::vector<std::vector<std::complex<double> > > aft_btfly(2, std::vector<std::complex<double> >(n_sample) );
+  std::array<std::vector<std::complex<double>>, 2> aft_btfly = {
+      std::vector<std::complex<double>>(n_sample),
+      std::vector<std::complex<double>>(n_sample),
+  }; // include input data itself at[0];
   
   // ---- Data as complex numbers -------//
   // --> Input data to aft_btfly[0][i] 
@@ -70,8 +71,6 @@ template <class InputIterator, class OutputIterator>
   
   // ------ FFT ------ //
   for(int i = 1 ; i <= n ; i++){
-    int i_next =  i      % 2;
-    int i_prev = (i - 1) % 2;
     int num_btfly  = power(2, i - 1);
     int rot_factor = power(2, n - i);
     int num_group  = rot_factor;
@@ -79,14 +78,15 @@ template <class InputIterator, class OutputIterator>
       for(int k = 0 ; k < num_group ; ++k){
 	int top_index      = 2 * num_btfly * k + j;
 	int bottom_index   = 2 * num_btfly * k + j + num_btfly;
-	aft_btfly[i_next][top_index]    = aft_btfly[i_prev][top_index] + W[rot_factor * j] * aft_btfly[i_prev][bottom_index];
-	aft_btfly[i_next][bottom_index] = aft_btfly[i_prev][top_index] - W[rot_factor * j] * aft_btfly[i_prev][bottom_index];
+	aft_btfly[1][top_index] = aft_btfly[0][top_index] + W[rot_factor * j] * aft_btfly[0][bottom_index];
+	aft_btfly[1][bottom_index] = aft_btfly[0][top_index] - W[rot_factor * j] * aft_btfly[0][bottom_index];
       }// k
     }// j
+    aft_btfly[0].swap(aft_btfly[1]);
   }// i : 1 -> n
   
   // ------ COPY ------ //
-  for(auto &&r : aft_btfly[n % 2]){
+  for (auto &&r : aft_btfly[0]){
     *real_first = r.real();
     *imag_first = r.imag();
     ++real_first;
@@ -121,8 +121,10 @@ void InverseFFT(int n_sample, InputIterator in_first_Re, InputIterator in_first_
   }
   
   // ---- Reserve array for output of butterfly operation ---- //
-  // --> include input data itself at[0];
-  std::vector<std::vector< std::complex<double> > > aft_btfly(2, std::vector<std::complex<double> >(n_sample) );
+  std::array<std::vector<std::complex<double>>, 2> aft_btfly = {
+      std::vector<std::complex<double>>(n_sample),
+      std::vector<std::complex<double>>(n_sample),
+  }; 
   
   // ---- Data as complex numbers -------//
   /////// Input data to aft_btfly[0][i] ///////
@@ -133,23 +135,22 @@ void InverseFFT(int n_sample, InputIterator in_first_Re, InputIterator in_first_
   
   // ------ Inverse FFT ------ //
   for(int i = 1 ; i <= n ; i++){
-    int i_next =  i      % 2;
-    int i_prev = (i - 1) % 2;
     int num_btfly  = power(2, i - 1);
     int rot_factor = power(2, n - i);
     int num_group  = rot_factor;
     for(int j = 0 ; j < num_btfly ; ++j){
       for(int k = 0 ; k < num_group ; ++k){
-	int top_index      = 2 * num_btfly * k + j;
+ 	int top_index      = 2 * num_btfly * k + j;
 	int bottom_index   = 2 * num_btfly * k + j + num_btfly;
-	aft_btfly[i_next][top_index]    = aft_btfly[i_prev][top_index] + W[rot_factor * j] * aft_btfly[i_prev][bottom_index];
-	aft_btfly[i_next][bottom_index] = aft_btfly[i_prev][top_index] - W[rot_factor * j] * aft_btfly[i_prev][bottom_index];
+	aft_btfly[1][top_index] = aft_btfly[0][top_index] + W[rot_factor * j] * aft_btfly[0][bottom_index];
+	aft_btfly[1][bottom_index] = aft_btfly[0][top_index] - W[rot_factor * j] * aft_btfly[0][bottom_index];
       }// k
     }// j
+    aft_btfly[0].swap(aft_btfly[1]);
   }// i : 1 -> n
   
   // ------ COPY ------ //
-  for(auto &&r : aft_btfly[n % 2]){
+  for (auto &&r : aft_btfly[0]){
     *out_first_Re = r.real() / n_sample;
     *out_first_Im = r.imag() / n_sample;
     ++out_first_Re;
