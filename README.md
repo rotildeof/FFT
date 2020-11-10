@@ -8,8 +8,13 @@ Fast Fourier Transform
 
 FFT 定義
 
+```c++:FFT
 template <class InputIterator, class OutputIterator>  
-void FFT(int n_sample, InputIterator  data_first, OutputIterator real_first, OutputIterator imag_first);
+void FFT(int n_sample, 
+         InputIterator  data_first, 
+         OutputIterator real_first, 
+         OutputIterator imag_first);
+```
 
 フーリエ変換は入力関数を複素数関数に変換するので、出力には実部と虚部それぞれ関する配列を用意する必要があります。
 入力に関する引数が1つしかないのは、実際に得られるデータ形式が大体の場合において実数の配列だからです。(というか、データが複素数として手に入ることってあるのでしょうか？？)
@@ -19,8 +24,14 @@ void FFT(int n_sample, InputIterator  data_first, OutputIterator real_first, Out
 
 InverseFFT 定義
 
+```c++:inv_FFT
 template <class InputIterator, class OutputIterator>  
-void InverseFFT(int n_sample, InputIterator in_first_Re, InputIterator in_first_Im, OutputIterator out_first_Re, OutputIterator out_first_Im);
+void InverseFFT(int n_sample, 
+                InputIterator in_first_Re, 
+                InputIterator in_first_Im, 
+                OutputIterator out_first_Re, 
+                OutputIterator out_first_Im);
+```
 
 逆フーリエ変換用の関数です。
 引数の意味は順番に 「サンプリング数(need to be power of 2)」, 「入力データ配列(実部)のイテレータ(begin)」,「入力データ配列(虚部)のイテレータ(begin)」, 「出力データ配列(実部)のイテレータ(begin)」, 「出力データ配列(虚部)のイテレータ(begin)」。
