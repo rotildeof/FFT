@@ -1,14 +1,15 @@
 # FFT
 Fast Fourier Transform
 
--- How to Use --
+How to Use
+--
 
 高速フーリエ変換のライブラリ。
 サンプリング数が2の累乗じゃないと使えないです。
 
 FFT 定義
 
-```c++:FFT
+```c++
 template <class InputIterator, class OutputIterator>  
 void FFT(int n_sample, 
          InputIterator  data_first, 
@@ -24,7 +25,7 @@ void FFT(int n_sample,
 
 InverseFFT 定義
 
-```c++:inv_FFT
+```c++
 template <class InputIterator, class OutputIterator>  
 void InverseFFT(int n_sample, 
                 InputIterator in_first_Re, 
