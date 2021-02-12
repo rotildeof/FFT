@@ -92,7 +92,7 @@ void FFT(int n_sample, InputIterator data_first, OutputIterator real_first,
           int bit_inv_i = binary_inversion(i, log2_of_n_sanmple);
           input[i] = {static_cast<double>(*(data_first + bit_inv_i)), 0};
         }
-        return std::move(input);
+        return input;
       });
 
   // ------ COPY ------ //
